@@ -91,6 +91,7 @@ export function BodySegments({
                             <CodeBlock
                                 key={index}
                                 html={segment.html}
+                                wholeHtml={segment.wholeHtml}
                                 language={segment.language}
                                 isCopyable={!isStatic}
                             />
@@ -128,6 +129,20 @@ export function FoldedCommitBody({
         );
     }
 
+    // The preview only ever cuts a code block that starts the body, and what comes before it is the same in both, so
+    // its first block copies the whole block at the same place.
+    const firstBlock = previewSegments.findIndex(
+        (segment) => segment.type === 'block',
+    );
+    const whole = segments[firstBlock];
+    const preview = previewSegments.map((segment, index) =>
+        index === firstBlock &&
+        segment.type === 'block' &&
+        whole?.type === 'block'
+            ? { ...segment, wholeHtml: whole.html }
+            : segment,
+    );
+
     // The button goes away, so focus moves to what was unfolded: the commit card, which the keyboard shortcuts walk,
     // or the body itself inside a reply, which they don't.
     const unfold = (button: HTMLButtonElement) => {
@@ -147,7 +162,7 @@ export function FoldedCommitBody({
     return (
         <div ref={bodyRef} tabIndex={-1} className="outline-none">
             <CommitBody
-                segments={isUnfolded ? segments : previewSegments}
+                segments={isUnfolded ? segments : preview}
                 mentions={mentions}
                 className={className}
             />

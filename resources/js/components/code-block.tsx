@@ -7,10 +7,12 @@ import { cn } from '@/lib/utils';
 
 export function CodeBlock({
     html,
+    wholeHtml,
     language,
     isCopyable = true,
 }: {
     html: string;
+    wholeHtml?: string;
     language: string | null;
     isCopyable?: boolean;
 }) {
@@ -34,7 +36,15 @@ export function CodeBlock({
             return;
         }
 
-        if (await copy(codeRef.current.textContent ?? '')) {
+        // A template's content is inert: nothing in it loads or runs.
+        const whole = document.createElement('template');
+        whole.innerHTML = wholeHtml ?? '';
+        const code =
+            wholeHtml === undefined
+                ? codeRef.current.textContent
+                : whole.content.textContent;
+
+        if (await copy(code ?? '')) {
             setIsCopied(true);
 
             return;
