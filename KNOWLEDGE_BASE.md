@@ -23,6 +23,7 @@ This file documents the platform's features, stack, and stories. Feature entries
   - [Stashed drafts](#stashed-drafts)
   - [Images and descriptions](#images-and-descriptions)
   - [Links, link cards, and embedded players](#links-link-cards-and-embedded-players)
+  - [Repository pages](#repository-pages)
   - [Replies and threads](#replies-and-threads)
   - [Quoting commits](#quoting-commits)
   - [Polls and voting](#polls-and-voting)
@@ -243,6 +244,14 @@ URLs and bare domains in commits and replies become clickable links. Long URLs a
 Supported links can also show click-to-play embedded players: YouTube, Vimeo, Loom, Twitch, Spotify, SoundCloud, Apple Music, Suno, CodePen, and asciinema. Only the link that gets the card can show a player, so choosing no card means no player. Embeds depend on server configuration and the linked URL being supported. Third-party player content loads only after you press play; those providers have their own privacy policies. This is embedding a link, not uploading a video or audio file to /dev/null.
 
 Sources: [link rendering](resources/js/components/linkified-text.tsx), [link-card selection](app/Http/Requests/CreateCommitRequest.php), [embed configuration](config/embeds.php), [embedded player](resources/js/components/link-embed.tsx).
+
+### Repository pages
+
+Every public GitHub repository has a page on /dev/null at `/github/{owner}/{repo}`, such as `/github/laravel/framework`. It gathers every commit and reply that links to the repository, or to anything in it like an issue, a pull request, or a file, newest first, so you can read what developers here are saying about a project in one place. A `.git` clone URL counts too. Only the link counts: writing `owner/repo` without `github.com` doesn't, and a link to a similarly named repository like `laravel/framework-docs` doesn't either. Names match regardless of case.
+
+The page shows the repository's name, description, and star count as GitHub reports them, refreshed about once a day, plus how many of the commits you can see mention it and how many people wrote them. Private repositories, deleted ones, or a GitHub outage leave out those details but still list the commits. The page follows the usual visibility rules: guests and crawlers can read it, only approved commits show to others, and muted and blocked people are filtered out. For now the page is reached by its address; links in commits still open GitHub.
+
+Sources: [repository page](app/Http/Controllers/RepositoryController.php), [matching commits](app/Queries/RepositoryCommitsQuery.php), [GitHub details](app/Queries/GitHubRepositoryQuery.php), [page](resources/js/pages/repository/show.tsx).
 
 ### Replies and threads
 

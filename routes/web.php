@@ -87,6 +87,7 @@ use App\Http\Controllers\ProductMetricsController;
 use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\RemoteCandidateController;
 use App\Http\Controllers\ReportedCommitController;
+use App\Http\Controllers\RepositoryController;
 use App\Http\Controllers\SafetyController;
 use App\Http\Controllers\ScheduledCommitController;
 use App\Http\Controllers\SearchController;
@@ -198,6 +199,9 @@ Route::middleware(RememberIntendedUrl::class)->group(function (): void {
         ->scopeBindings()
         ->whereNumber('photo')
         ->name('commit-photo.show');
+    Route::get('github/{owner}/{repository}', [RepositoryController::class, 'show'])
+        ->where(['owner' => '[A-Za-z0-9-]{1,39}', 'repository' => '(?!\.+$)[A-Za-z0-9._-]{1,100}'])
+        ->name('repository.show');
 });
 
 // Sitemaps...
